@@ -6,8 +6,8 @@ import axios from "axios";
 const config = {
   issuer: "https://dev-956984.okta.com/oauth2/default",
   clientId: "0oadqw2003tWfIV3J4x6",
-  redirectUri: "http://localhost:3000/implicit/callback",
-  pkce: true,
+  redirectUri: `${window.location}implicit/callback`,
+  pkce: false,
   responseType: "id_token",
   responseMode: "fragment",
   scope: ["profile", "email", "openid"],
@@ -50,7 +50,7 @@ const Home = () => {
     <>
       <button onClick={login}>Login</button>
       <a
-        href={`https://dev-956984.okta.com/oauth2/v1/authorize?idp=0oadr7cgkERe73AkA4x6&client_id=${config.clientId}&response_type=id_token&response_mode=fragment&scope=openid&redirect_uri=http://localhost:3000/implicit/callback&state=ANYVALUE&nonce=ANYVALUE`}
+        href={`https://dev-956984.okta.com/oauth2/v1/authorize?idp=0oadr7cgkERe73AkA4x6&client_id=${config.clientId}&response_type=id_token&response_mode=fragment&scope=openid&redirect_uri=${window.location}implicit/callback&state=ANYVALUE&nonce=ANYVALUE`}
       >
         Login with LinkedIn
       </a>
@@ -61,9 +61,12 @@ const Home = () => {
 const Login = (props) => {
   const token = props.location.hash.split("#id_token=")[1].split("&")[0];
 
-  useEffect(() => {}, []);
-
-  return token;
+  return (
+    <>
+      {token}
+      <LoginCallback />
+    </>
+  );
 };
 
 export default App;
