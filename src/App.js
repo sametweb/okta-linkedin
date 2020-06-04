@@ -61,6 +61,7 @@ const Login = (props) => {
   const { authService, authState } = useOktaAuth();
 
   useEffect(() => {
+    authService.handleAuthentication();
     if (props.location.hash.includes("#id_token")) {
       authService.login("/");
     }
