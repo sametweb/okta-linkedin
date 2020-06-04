@@ -3,15 +3,11 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Security, LoginCallback, useOktaAuth } from "@okta/okta-react";
 
 const config = {
+  // for okta-react components
   issuer: "https://dev-956984.okta.com/oauth2/default",
   clientId: "0oadqw2003tWfIV3J4x6",
   redirectUri: `${window.location.origin}/implicit/callback`,
   pkce: true,
-  responseType: "id_token token",
-  responseMode: "fragment",
-  scope: ["profile", "email", "openid"],
-  state: "ANYVALUE",
-  nonce: "ANYVALUE",
 };
 
 const App = () => {
@@ -28,12 +24,31 @@ const App = () => {
 const Home = () => {
   const { authState, authService } = useOktaAuth();
   console.log({ authState, authService });
-
-  authService.getUser().then((res) => console.log(res));
-  const login = () => {
-    authService.login("/"); // Redirect to '/' after login
+  authService.getUser().then(console.log);
+  const linkedin = {
+    url: "https://dev-956984.okta.com/oauth2/v1/authorize",
+    idp: "0oadr7cgkERe73AkA4x6",
+    clientId: "0oadqw2003tWfIV3J4x6",
+    responseType: "id_token token",
+    responseMode: "fragment",
+    scope: "openid%20profile%20email",
+    redirectUri: `${window.location.origin}/implicit/callback`,
+    state: "ANYVALUE",
+    nonce: "ANYVALUE",
   };
+  const {
+    url,
+    idp,
+    clientId,
+    responseType,
+    responseMode,
+    scope,
+    redirectUri,
+    state,
+    nonce,
+  } = linkedin;
 
+  const finalUrl = `${url}?idp=${idp}&client_id=${clientId}&response_type=${responseType}&response_mode=${responseMode}&scope=${scope}&redirect_uri=${redirectUri}&state=${state}&nonce=${nonce}`;
   const logout = () => {
     authService.logout("/"); // Redirect to '/' after logout
   };
@@ -45,14 +60,7 @@ const Home = () => {
   return authState.isAuthenticated ? (
     <button onClick={logout}>Logout</button>
   ) : (
-    <>
-      <button onClick={login}>Login</button>
-      <a
-        href={`https://dev-956984.okta.com/oauth2/v1/authorize?idp=0oadr7cgkERe73AkA4x6&client_id=${config.clientId}&response_type=id_token token&response_mode=fragment&scope=openid%20profile%20email&redirect_uri=${window.location.origin}/implicit/callback&state=ANYVALUE&nonce=ANYVALUE`}
-      >
-        Login with LinkedIn
-      </a>
-    </>
+    <a href={finalUrl}>Login with LinkedIn</a>
   );
 };
 
@@ -63,7 +71,7 @@ const Login = (props) => {
   useEffect(() => {
     authService.handleAuthentication();
     if (props.location.hash.includes("#id_token")) {
-      authService.login("/");
+      authService.login("/"); // redirect to '/' after login
     }
   }, []);
 
